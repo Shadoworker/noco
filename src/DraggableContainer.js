@@ -21,7 +21,7 @@ const DraggableContainer = () => {
           <div id="draggable-item-1" className="draggable-item" draggable="true" onDragStart={handleItemDragStart} onDragEnd={handleItemDragEnd}>
             Element 1
           </div>
-          <div id="draggable-item-2" className="draggable-item" draggable="true" onDragStart={handleItemDragStart} onDragEnd={handleItemDragEnd}>
+          <div id="draggable-item-2" className="draggable-item draggable2" draggable="true" onDragStart={handleItemDragStart} onDragEnd={handleItemDragEnd}>
             Element 2
           </div>
           {/* Add more draggable items here */}
