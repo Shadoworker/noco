@@ -1,6 +1,7 @@
 .items-block
 {
     display: flex;
+    width: 100%;
 
 }
 .item {

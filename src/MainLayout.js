@@ -1,12 +1,12 @@
 import React from 'react';
-import './ThunkableLayout.css';
+import './MainLayout.css';
 import ItemsBlock from './ItemsBlock';
 import FrameBlock from './FrameBlock';
 import SettingsBlock from './SettingsBlock';
 
-const ThunkableLayout = () => {
+const MainLayout = () => {
   return (
-    <div className="thunkable-layout">
+    <div className="main-layout">
       <div className="sidebar">
         <ItemsBlock />
       </div>
@@ -18,4 +18,4 @@ const ThunkableLayout = () => {
   );
 };
 
-export default ThunkableLayout;
+export default MainLayout;

@@ -34,7 +34,6 @@ const SortableContainer = () => {
       if (clonedElementData && !clonedElementData.classList.contains("sortable-item")) {
         const clonedElement = clonedElementData.cloneNode(true);
         clonedElement.setAttribute('draggable', 'false');
-        clonedElement.setAttribute('id', `sortable-item-${sortableItems.length + 1}`);
         clonedElement.classList.add('sortable-item');
 
         var elementId = `sortable-item-${sortableItems.length + 1}`;

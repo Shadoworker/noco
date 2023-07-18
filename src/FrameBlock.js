@@ -1,4 +1,5 @@
 import React from 'react';
+import SortableContainer from './SortableContainer';
 
 const FrameBlock = () => {
   return (
@@ -6,8 +7,7 @@ const FrameBlock = () => {
       <div className="phone-frame">
         <div className="frame-content">
 
-            <div className="sortable-container" id="sortable-container">
-            </div>
+           <SortableContainer />
 
         </div>
       </div>
