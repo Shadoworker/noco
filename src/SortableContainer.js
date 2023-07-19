@@ -162,7 +162,7 @@ const SortableContainer = () => {
     const center = hoveredElementBCR.top + partial;
     const thirdSection = hoveredElementBCR.top + (partial * 3);
 
-    if(hoveringItem.id != id) // Dont consider the same element
+    if(hoveringItem && hoveringItem.id != id) // Dont consider the same element
     {
       if (mouseY < center) 
       {
@@ -261,6 +261,7 @@ const SortableContainer = () => {
 
      
       setHoveringIndex(null);
+      setHoveringItem(null);
 
       // sorting styling
       var container = sortableContainerRef.current; // re-check
@@ -272,37 +273,44 @@ const SortableContainer = () => {
 
     }
 
-    setHoveringItem(null);
 
   };
 
   // END SORT ZONE -------------------------------------------
 
   // RESIZE ZONE ---------------------------------------------
-  const handleResizeMouseDown = (e, index) => {
+  const handleResizeMouseDown = (e, item) => {
+    e.stopPropagation();
     e.preventDefault();
     var element = e.target.parentNode;
 
     const initResize = (e) => {
+      e.stopPropagation();
       e.preventDefault();
       window.addEventListener('mousemove', Resize, false);
       window.addEventListener('mouseup', stopResize, false);
     }
 
     const Resize = (e) => {
+      e.stopPropagation();
+      e.preventDefault();
       element.style.width = (e.clientX - element.getBoundingClientRect().left - 20) + 'px';
       element.style.height = (e.clientY - element.getBoundingClientRect().top - 20) + 'px';
     }
 
     const stopResize = (e) => {
+      e.stopPropagation();
+      e.preventDefault();
 
       window.removeEventListener('mousemove', Resize, false);
       window.removeEventListener('mouseup', stopResize, false);
 
       // Replace item
-      var updatedItems = [...sortableItems];
-      updatedItems[index].style = element.style.cssText;
-      setSortableItems(updatedItems);
+      var items = [...sortableItems];
+      var newStyle = element.style.cssText;
+       
+      var updatedStyleItems = updateItemStyleFromPath(items, item, newStyle);
+      setSortableItems(updatedStyleItems);
     
 
     }
@@ -347,6 +355,40 @@ const SortableContainer = () => {
 
     var style = convertCSSToReactStyles(cssText)
     return style;
+  }
+
+
+  const updateItemStyleFromPath = (_arr, item, style) =>{ 
+
+    var path = item.path;
+    var nodes = path.split("/");
+    
+    var _sortableItems = [..._arr];
+    var currentParent = _sortableItems;
+    var nextParent = currentParent;
+   
+    for (let i = 1; i < nodes.length; i++) // dont consider the root (#/)
+    { 
+      const node = nodes[i];
+      var item = currentParent.find(e=>e.id == node);
+
+      if(i == nodes.length-1) // Then remove that item from its parent
+      {
+         currentParent[currentParent.indexOf(item)].style = style;
+      }
+      else
+      {
+        nextParent = item.children;
+      }
+      
+      // set new parent
+      currentParent = nextParent;
+    
+    }
+
+    console.log(_sortableItems);
+    return _sortableItems;
+
   }
 
   // @ Remove an item from its current path in order to move it elsewhere
@@ -522,7 +564,7 @@ const SortableContainer = () => {
               sortableRenderer(_item, _index)
             ))}
 
-            <div className="resizable-handler" onMouseDown={(e) => handleResizeMouseDown(e, index)} ></div>
+            <div className="resizable-handler" onMouseDown={(e) => handleResizeMouseDown(e, item)} ></div>
 
           </div>
       )
