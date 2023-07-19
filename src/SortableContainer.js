@@ -218,6 +218,7 @@ const SortableContainer = () => {
 
 
   const handleSortItemDrop = (e, index, item) => {
+    e.stopPropagation();
     e.preventDefault();
     
     if (hoveringIndex != null) {
@@ -356,17 +357,20 @@ const SortableContainer = () => {
     
     var _sortableItems = [..._arr];
     var currentParent = _sortableItems;
+    var nextParent = currentParent;
    
     for (let i = 1; i < nodes.length; i++) // dont consider the root (#/)
     { 
       const node = nodes[i];
       var item = currentParent.find(e=>e.id == node);
-      
-      var nextParent = item.children;
 
       if(i == nodes.length-1) // Then remove that item from its parent
       {
          currentParent.splice(currentParent.indexOf(item), 1);
+      }
+      else
+      {
+        nextParent = item.children;
       }
       
       // set new parent
@@ -403,7 +407,7 @@ const SortableContainer = () => {
       var item = currentParent.find(e=>e.id == node);
       
       targetParent = currentParent;
-      var nextParent = item.children ? item.children : currentParent;
+      var nextParent = item ? item.children : currentParent;
       // set new parent
       currentParent = nextParent;
 
