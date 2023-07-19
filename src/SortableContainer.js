@@ -59,58 +59,56 @@ const SortableContainer = () => {
 
 
   // DRAG N DROP ZONE ---------------------------------------------
+
+
+  const handleFrameDragEnter = (e) =>{
+
+    var container = sortableContainerRef.current; // re-check
+    container.classList.add("slist")
+
+    let items = container.querySelectorAll(".sortable-item");
+    for (let it of items) {
+       it.classList.add("hint");
+    }
+
+  }
+
   const handleFrameDragOver = (e) => {
     e.preventDefault();
   };
 
+  const createItem = (_type, clonedElement) =>{
+
+    var elementId = `sortable-item-${sortableItemsCounter + 1}`;
+    var newElement = {
+        tag : clonedElement.nodeName.toLowerCase(),
+        path :"#/"+elementId, // The element path
+        id: elementId, 
+        classList: clonedElement.classList.value, 
+        style: clonedElement.style.cssText,
+        children : []
+      }
+
+    setSortableItemsCounter((prev) => prev + 1);
+
+    return newElement;
+
+  } 
+
   const handleFrameDrop = (e) => {
+      
     e.preventDefault();
 
-    // if (sortableItems.length > 0) 
-    {
-      const data = e.dataTransfer.getData('text/plain');
-      var clonedElementData = document.getElementById(data);
-      if (clonedElementData && !clonedElementData.classList.contains("sortable-item")) {
-        const clonedElement = clonedElementData.cloneNode(true);
-        clonedElement.setAttribute('draggable', 'false');
-        clonedElement.classList.add('sortable-item');
+    const data = e.dataTransfer.getData('text/plain');
+    var clonedElementData = document.getElementById(data);
+    if (clonedElementData && !clonedElementData.classList.contains("sortable-item")) {
+      const clonedElement = clonedElementData.cloneNode(true);
+      clonedElement.setAttribute('draggable', 'false');
+      clonedElement.classList.add('sortable-item');
 
-        var elementId = `sortable-item-${sortableItemsCounter + 1}`;
-        var newElement = {
-            tag : clonedElement.nodeName.toLowerCase(),
-            path :"#/"+elementId, // The element path
-            id: elementId, 
-            classList: clonedElement.classList.value, 
-            style: clonedElement.style.cssText,
-            children : [
-              // {
-              //   tag : clonedElement.nodeName.toLowerCase(), 
-              //   id: elementId+"-1", 
-              //   classList: clonedElement.classList.value, 
-              //   style: clonedElement.style.cssText,
-              //   children : [
-              //     {
-              //       tag : clonedElement.nodeName.toLowerCase(), 
-              //       id: elementId+"-1-1", 
-              //       classList: clonedElement.classList.value, 
-              //       style: clonedElement.style.cssText,
-              //       children : []
-              //     }
-              //   ]
-              // },
-              // {
-              //   tag : clonedElement.nodeName.toLowerCase(), 
-              //   id: elementId+"-1", 
-              //   classList: clonedElement.classList.value, 
-              //   style: clonedElement.style.cssText,
-              //   children : []
-              // }
-            ]
-          }
+      var newElement = createItem("div", clonedElement);
 
-        setSortableItems((prevItems) => [...prevItems, newElement]);
-        setSortableItemsCounter((prev) => prev + 1);
-      }
+      setSortableItems((prevItems) => [...prevItems, newElement]);
 
     }
   };
@@ -121,9 +119,7 @@ const SortableContainer = () => {
 
   const handleSortItemMouseDown = (e, index) => {
 
-    var element = e.target;
-    // console.log(index)    
-    // console.log(element.getAttribute("id"))    
+    var element = e.target;    
   };
 
 
@@ -162,8 +158,8 @@ const SortableContainer = () => {
     const center = hoveredElementBCR.top + partial;
     const thirdSection = hoveredElementBCR.top + (partial * 3);
 
-    if(hoveringItem && hoveringItem.id != id) // Dont consider the same element
-    {
+    // if(hoveringItem && hoveringItem.id != id) // Dont consider the same element
+    // {
       if (mouseY < center) 
       {
         if(!hoveredElement.classList.contains("hovered-top"))
@@ -190,12 +186,13 @@ const SortableContainer = () => {
         setSortItemActionType(SortItemActionType.INSIDE);
 
       }
-    }
-    else
-    {
-      setSortItemActionType(SortItemActionType.NONE);
-    }
+    // }
+    // else
+    // {
+    //   setSortItemActionType(SortItemActionType.NONE);
+    // }
 
+    console.log("hovering")
   }
 
   const handleSortItemDragEnter = (e) => {
@@ -221,8 +218,10 @@ const SortableContainer = () => {
     e.stopPropagation();
     e.preventDefault();
     
-    if (hoveringIndex != null) {
-      var newSortableItems = [...sortableItems];
+    var newSortableItems = [...sortableItems];
+
+    if (hoveringIndex != null) // No already added item
+    { 
 
       // Get SortItemActionType
       switch(sortItemActionType)
@@ -259,19 +258,33 @@ const SortableContainer = () => {
         break;
       }
 
-     
       setHoveringIndex(null);
       setHoveringItem(null);
 
-      // sorting styling
-      var container = sortableContainerRef.current; // re-check
-      let items = container.querySelectorAll(".sortable-item");
-      for (let it of items) {
-        it.classList.remove("hint")
-        it.classList.remove("active")
-      }
-
     }
+    else // New dropped item
+    {
+
+      const data = e.dataTransfer.getData('text/plain');
+      var clonedElementData = document.getElementById(data);
+      if (clonedElementData && !clonedElementData.classList.contains("sortable-item")) 
+      {
+        const clonedElement = clonedElementData.cloneNode(true);
+        clonedElement.setAttribute('draggable', 'false');
+        clonedElement.classList.add('sortable-item');
+  
+        var newElement = createItem("div", clonedElement);
+
+        var itemsListAfterPlacing = placeItemFromItemPath(newSortableItems, item, newElement, sortItemActionType);
+  
+        setSortableItems(itemsListAfterPlacing);
+  
+      }
+    }
+
+    
+    // sorting styling
+    removeHintStyles();
 
 
   };
@@ -322,6 +335,17 @@ const SortableContainer = () => {
   // END RESIZE ZONE ------------------------------------
 
   // UTILITIES --------------------------------------------
+
+  const removeHintStyles = () =>{
+
+    var container = sortableContainerRef.current; // re-check
+    let items = container.querySelectorAll(".sortable-item");
+    for (let it of items) {
+      it.classList.remove("hint")
+      it.classList.remove("active")
+    }
+  }
+
   const swapElements = (_array, index1, index2) => {
     _array[index1] = _array.splice(index2, 1, _array[index1])[0];
   };
@@ -575,7 +599,10 @@ const SortableContainer = () => {
     <div className="block">
       <div className="sortable-container" ref={sortableContainerRef} id="sortable-container"
         onDragOver={handleFrameDragOver}
-        onDrop={handleFrameDrop}>
+        onDrop={handleFrameDrop}
+        onDragEnter={handleFrameDragEnter}
+        
+        >
         {sortableItems.map((item, index) => (
           sortableRenderer(item, index)
         ))}
