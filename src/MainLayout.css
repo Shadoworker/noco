@@ -70,8 +70,6 @@ body {
     /* Other frame content styles */
   }
   
-
-
   .app {
     display: flex;
     flex-direction: row;
@@ -146,6 +144,15 @@ body {
     border: 1px solid #ffa5a5;
     background: #ffe7e7;
   }
+
+  .slist .sortable-item.active.hovered-top {
+    border-top: dashed 2px rgb(81, 8, 136);
+  }
+
+  .slist .sortable-item.active.hovered-bottom {
+    border-bottom: dashed 2px rgb(81, 8, 136);
+  }
+
   .resizable-handler {
     position: absolute;
     right: 0px;
